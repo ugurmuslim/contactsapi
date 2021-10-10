@@ -63,6 +63,7 @@ class GoogleService implements ExternalServiceInterface
         $jsonResponse = $response->json();
         $contactArray = [];
         foreach ($jsonResponse['connections'] as $connection) {
+            if(isset($connection['emailAddresses'][0]['value'])) {
             $contactArray[] = [
                 "displayName" => isset($connection['names'][0]['displayName']) ? $connection['names'][0]['displayName'] : null,
                 "givenName"   => isset($connection['names'][0]['givenName']) ? $connection['names'][0]['givenName'] : null,
@@ -70,7 +71,7 @@ class GoogleService implements ExternalServiceInterface
                 "email"       => $connection['emailAddresses'][0]['value'],
             ];
         }
-
+        }
         return $this->downloadAsCSV($contactArray);
 
     }
