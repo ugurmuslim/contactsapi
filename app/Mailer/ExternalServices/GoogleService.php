@@ -46,7 +46,6 @@ class GoogleService implements ExternalServiceInterface
         }
         $jsonResponse = $response->json();
         return $this->getContacts($jsonResponse['access_token']);
-        //return $jsonResponse['access_token'];
 
     }
 
