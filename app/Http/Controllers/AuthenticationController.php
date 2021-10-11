@@ -7,7 +7,7 @@ use App\Mailer\Interfaces\ExternalServiceInterface;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Request;
 
-class AuthenticationController extends Controller
+class AuthenticationController extends BaseAPIController
 {
     /**
      * Create a new controller instance.
@@ -24,6 +24,11 @@ class AuthenticationController extends Controller
          * @var ExternalServiceInterface $service
          */
         $service = ServiceSelector::selector($serviceName);
+
+        if(!$service) {
+            return $this->failureResult("Service could not be found");
+        }
+
         $url = $service->generateServiceUrl();
         return redirect($url);
     }
@@ -33,13 +38,23 @@ class AuthenticationController extends Controller
         $code = Request::input("code");
 
         if(!$code) {
-            dd(2);
+            return $this->failureResult("Wrong code");
         }
         /**
          * @var ExternalServiceInterface $service
          */
         $service = ServiceSelector::selector($serviceName);
+
+        if(!$service) {
+            return $this->failureResult("Service could not be found");
+        }
+
         $response = $service->completeAuthentication($code);
+
+        if(!$response) {
+            return $this->failureResult("An error occurred");
+        }
+
         return $response;
     }
 
@@ -50,7 +65,17 @@ class AuthenticationController extends Controller
          * @var ExternalServiceInterface $service
          */
         $service = ServiceSelector::selector($serviceName);
+
+        if(!$service) {
+            return $this->failureResult("Service could not be found");
+        }
+
         $response = $service->getContacts($accessToken);
+
+        if(!$response) {
+            return $this->failureResult("An error occurred");
+        }
+
         return $response;
 
     }
